@@ -7,12 +7,12 @@ import {Socket} from "ngx-socket-io";
     styleUrls: ['./app.component.sass']
 })
 export class AppComponent {
-    title = 'frontend';
+    lastMessage = 'Ready to receive...';
 
     constructor(private socket: Socket) { }
 
     ngOnInit() {
         this.socket.fromEvent('premMessage')
-            .subscribe(msg => console.log(msg))
+            .subscribe(msg => this.lastMessage = msg)
     }
 }
