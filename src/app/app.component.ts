@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import {Socket} from "ngx-socket-io";
 
+import {bufferTime, throttle} from "rxjs/operators";
+import {interval} from "rxjs/internal/observable/interval";
+
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
@@ -18,7 +21,16 @@ export class AppComponent {
 
         const stdObservable = this.socket.fromEvent('stdMessage')
 
-        const stdObserver1 = stdObservable.subscribe(msg => this.lastMessage = msg)
-        const stdObserver2 = stdObservable.subscribe(msg => this.messageCounter++)
+        const stdObserver1 = stdObservable
+            .pipe(
+                throttle(ev => interval(500))
+            )
+            .subscribe(msg => this.lastMessage = msg)
+
+        const stdObserver2 = stdObservable
+            .pipe(
+                bufferTime(1000)
+            )
+            .subscribe(accMsg => this.messageCounter = accMsg.length)
     }
 }
